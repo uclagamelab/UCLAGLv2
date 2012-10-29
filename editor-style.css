@@ -1,0 +1,40 @@
+/* @override http://games.ucla.edu/wp-content/themes/UCLAGL/style.css */
+
+
+
+@font-face {
+	font-family: 'FFFCorporateRegular';
+	src: url('fonts/fffcorporate-webfont.eot');
+	src: local('☺'), url('fonts/fffcorporate-webfont.woff') format('woff'), url('fonts/fffcorporate-webfont.ttf') format('truetype'), url('fonts/fffcorporate-webfont.svg#webfontSSua0Ykc') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+
+
+
+a:link, a:visited {
+	text-decoration: underline;
+	color: #336666;
+}
+
+a:hover, a:active {
+	text-decoration: underline;
+	color: #78d500;
+}
+
+
+
+
+
+* {
+	font-family: "Courier New", Courier, mono;
+}
+
+
+h1,h2,h3,h4{
+	font-family: FFFCorporateRegular, "Courier New", Courier, mono;
+
+}
+
+
