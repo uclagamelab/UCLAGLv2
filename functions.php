@@ -2,6 +2,12 @@
 
 define('_TEMPLATEURL',WP_CONTENT_URL.'/themes/'.basename(TEMPLATEPATH));
 
+//debug show what template is being used
+add_action('wp_footer', 'show_template');
+function show_template() {
+    global $template;
+      print_r($template);
+}
 
 //deactivate WordPress function and activate own function
 remove_shortcode('gallery', 'gallery_shortcode');
@@ -309,6 +315,7 @@ function create_resource_type() {
 		'show_ui' => true, 
 		'query_var' => true,
 		'rewrite' => array("slug" => "resources"), // Permalinks format
+    'has_archive' => true,
 		'register_meta_box_cb' => 'add_resource_metaboxes',
 		'capability_type' => 'resource',
 		'capabilities' => $capabilities,
