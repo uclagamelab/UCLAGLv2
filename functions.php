@@ -101,7 +101,7 @@ $short_description = new WPAlchemy_MetaBox(array
 	'id' => '_short_description',
 	'title' => 'Short Description',	
 	'template' => TEMPLATEPATH . '/custom/short_description_meta.php',
-	'types' => array('game', 'resource', 'person'),
+	'types' => array('game', 'resource', 'person', 'page'),
 	'priority' => 'high',
 ));
 
