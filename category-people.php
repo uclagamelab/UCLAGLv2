@@ -6,24 +6,37 @@ Template Name: People Page
 <?php get_header(); ?>
 		<section id="main_section">
 			<section id="about_intro">
-				<?php while (have_posts()) : the_post(); ?>
-				<?php the_post_thumbnail('inline-large'); ?>
+      <img src="<?php bloginfo('template_directory'); ?>/images/game-lab.jpg" />
 				<article id="intro_text">
 				<h3>
-				<?php 
-					$short_description->the_field('description'); 
-					$short_description->the_value();
-				?>	
+THE GAME LAB BRINGS STUDENTS FROM A VARIETY OF BACKGROUNDS TOGETHER TO CREATE, PLAY, AND DISCUSS GAMES.
 				</h3>
 				</article><!-- intro_text -->
 				
 			</section><!-- #about_intro -->
 			<section id="main_description">
-				<h3>The UCLA Game Lab Team ~</h3>
-				<?php the_content(); ?>
+      <p><?php echo category_description( $category_id ); ?></p>
+<?php echo get_category_parents($cat, TRUE, ' &raquo; '); ?><br />
+<?php $parent_cats =  get_category_parents( get_query_var('cat') , false , ' ' ); ?>
+<?php 
+  if (is_category()){
+    $this_category = get_category($cat);
+      if (get_term_children($this_category->cat_ID, 'category') != "") {
+            $args = array(
+              'show_option_none' => __(''),
+              'orderby' => 'id',
+              'show_count' => 0,
+              'title_li' => __(''),
+              'use_desc_for_title' => 1,
+              'child_of' => $this_category->cat_ID
+            );
+            echo "<ul>";
+            wp_list_categories($args);
+            echo "</ul>";
+      }     
+} ?>  
 			</section><!-- main_description -->
 			
-			<?php endwhile; ?>
 			
 			
 			<section id="bio_banner">
@@ -31,10 +44,18 @@ Template Name: People Page
 					
 				<article id="bio_banner_background"><img src="<?php bloginfo('template_directory'); ?>/images/yellow_banner.png" /></article>
 				<article id="bio_banner_title">
-					<p>
-						<span>CURRENT GAME LAB TEAM ~</span> 
-						Here's a little more about people who work in the game lab
-					</p>
+					<p><span>~
+            <?php 
+            
+            $current_cat = single_cat_title("",false);
+            if($current_cat == "People"){ ?>
+            ALL TIME GAME LAB TEAM 
+            <?php } else if($current_cat == "Alumni"){ ?>
+            PAST GAME LAB TEAM
+            <?php } else if($current_cat == "Current"){ ?>
+            CURRENT GAME LAB TEAM
+            <?php } ?>
+					~</span></p>
 				</article>
 			</section><!-- news_feed -->
 			
@@ -43,21 +64,20 @@ Template Name: People Page
 			<?php 
 				$args = array( 
 					'post_type' => 'person',
-					//'tag' => 'active,alumni',
-					'order' => 'ASC',
+          'order' => 'ASC',
+          'category_name'=>single_cat_title('', false)
 				);
 				$loop = new WP_Query($args);
 				$count = 1;
 	 			while ( $loop->have_posts() ) : $loop->the_post(); 
 	 			
 
-				if($count%3==0){ ?>
-				<article <?php post_class('bio_article last'); ?>>
-				<?php } else { ?>
+				?>
 				<article <?php post_class('bio_article'); ?>>
-				<?php } ?>
-						<?php the_post_thumbnail('featured');  ?>
+          <?php the_post_thumbnail('featured');  ?>
 					<div class="bio_article_text">
+
+
 							<?php the_title( '<h3>', '</h3>' ); ?>
 						<p>
 
@@ -69,10 +89,7 @@ Template Name: People Page
 					</div><!-- bio_article_text -->
 					<div class="badges">
 						<?php 
-						// $lab_employee->the_field('job_title');
-						$my_meta = $lab_employee->the_meta();
-						if($my_meta['job_title'] != ""){ 
-						
+						$lab_employee->the_field('job_title'); $my_meta = $lab_employee->the_meta(); if($my_meta['job_title'] != ""){ 
 						?>
 							<div class="bio_badge blue">
 								<p>Game Lab <?php echo $my_meta['job_title']; ?></p>

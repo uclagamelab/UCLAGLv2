@@ -1,13 +1,20 @@
 <?php
 
+
+require_once('FirePHPCore/FirePHP.class.php');
+ob_start();
+$firephp = FirePHP::getInstance(true);
+
 define('_TEMPLATEURL',WP_CONTENT_URL.'/themes/'.basename(TEMPLATEPATH));
 
 //debug show what template is being used
 add_action('wp_footer', 'show_template');
 function show_template() {
     global $template;
-      print_r($template);
+    print_r($template);
 }
+
+
 
 //deactivate WordPress function and activate own function
 remove_shortcode('gallery', 'gallery_shortcode');
@@ -54,7 +61,7 @@ function my_get_posts( $query ) {
 }
 
 // custom constant (opposite of TEMPLATEPATH)
-define('_TEMPLATEURL', WP_CONTENT_URL . '/themes/' . basename(TEMPLATEPATH));
+//define('_TEMPLATEURL', WP_CONTENT_URL . '/themes/' . basename(TEMPLATEPATH));
 
 include_once 'WPAlchemy/MetaBox.php';
 
@@ -184,7 +191,6 @@ function my_init()
 {
 	if (is_admin())
 	{
-//		wp_enqueue_script('custom_js_jquery',_TEMPLATEURL .'/custom/js/jquery-1.5.1.min.js');
 		wp_enqueue_script('custom_js_ui',_TEMPLATEURL .'/custom/js/jquery-ui-1.8.11.custom.min.js',array('custom_js_jquery'));
 		wp_enqueue_script('custom_js_timepicker',_TEMPLATEURL .'/custom/js/jquery-ui-timepicker-addon.js',array('custom_js_ui', 'custom_js_jquery'));
 		wp_enqueue_script('custom_js_custom',_TEMPLATEURL .'/custom/js/custom.js',array('custom_js_timepicker','custom_js_jquery'),NULL,TRUE);
@@ -267,15 +273,16 @@ function create_game_type() {
 		'publicly_queryable' => true,
 		'show_ui' => true, 
 		'query_var' => true,
-		'rewrite' => array("slug" => "games"), // Permalinks format
+		'rewrite' => array("slug" => "game"), // Permalinks format
+    'has_archive' => false,
 		'register_meta_box_cb' => 'add_game_metaboxes',
 		'capability_type' => 'game',
 		'capabilities' => $capabilities,
-		'hierarchical' => false,
+		'hierarchical' => true,
 		'supports' => array('title','editor','thumbnail',), 
 		'menu_position' => 5,
 		'menu_icon' => get_stylesheet_directory_uri() . '/images/star.png',
-		'taxonomies' => array('post_tag',),
+		'taxonomies' => array('post_tag','category'),
 	); 
 	register_post_type('game',$args);
 }
@@ -303,7 +310,7 @@ function create_resource_type() {
 		'new_item' => __('New Resource'),
 		'view_item' => __('View Resource'),
 		'search_items' => __('Search Resource'),
-		'not_found' =>  __('No Games Resource'),
+		'not_found' =>  __('No Resource found'),
 		'not_found_in_trash' => __('No Resources found in Trash'), 
 		'parent_item_colon' => ''
 	);
@@ -314,8 +321,8 @@ function create_resource_type() {
 		'publicly_queryable' => true,
 		'show_ui' => true, 
 		'query_var' => true,
-		'rewrite' => array("slug" => "resources"), // Permalinks format
-    'has_archive' => true,
+		'rewrite' => array("slug" => "resource"), // Permalinks format
+    'has_archive' => false,
 		'register_meta_box_cb' => 'add_resource_metaboxes',
 		'capability_type' => 'resource',
 		'capabilities' => $capabilities,
@@ -365,8 +372,9 @@ function create_people_type(){
 		'query_var' => true,
 		'rewrite' => array("slug" => "people"), // Permalinks format
 		'capability_type' => 'person',
+    'has_archive' => false,
 		'capabilities' => $capabilities,
-		'hierarchical' => false,
+		'hierarchical' => true,
 		'supports' => array('thumbnail','title'), 
 		'menu_position' => 5,
 		'taxonomies' => array('post_tag','category'),
@@ -404,6 +412,7 @@ function create_context_taxonomy(){
 }
 
 function my_post_updated_messages( $messages ) {
+  global $post_ID;
 
 	$messages['game'] = array(
 	  0 => '', // Unused. Messages start at index 1.
@@ -715,4 +724,30 @@ function my_gallery_shortcode($attr) {
 
 	return $output;
 }
+
+
+//this makes sub-cats use parents template
+function load_cat_parent_template(){
+  global $wp_query, $firephp;
+  if (!$wp_query->is_category) {
+    return true;
+  }
+
+  // get current category object
+  $cat = $wp_query->get_queried_object();
+
+  // trace back the parent hierarchy and locate a template
+  while ($cat && !is_wp_error($cat)) {
+    $template = TEMPLATEPATH . "/category-{$cat->slug}.php";
+    if (file_exists($template)) {
+      load_template($template);
+      exit;
+    }
+
+    $cat = $cat->parent ? get_category($cat->parent) : false;
+  }
+}
+//add_action('template_redirect', 'load_cat_parent_template');
+
+
 ?>

@@ -40,7 +40,14 @@
 </script>
 
 	</head>
-	<body <?php body_class(); ?>>
+<?php 
+
+if ( is_single() || is_category() ) { /* Only do this if we're on a single post or category page */
+  $parent_cats =  get_category_parents( get_query_var('cat') , false , ',' );
+  $parent = explode(',', $parent_cats);
+  $parent_class = "parent-category-" . strtolower($parent[0]);
+}?>
+	<body <?php body_class($parent_class); ?>>
 		<header>
 			
 			<a href="<?php bloginfo('url'); ?>/">
