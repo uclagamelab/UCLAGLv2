@@ -5,7 +5,16 @@
 			<?php if (have_posts()) : ?>
 
 			<article id="post-<?php the_ID(); ?>" >
-				<h1>Search Results for &ldquo;<?php the_search_query(); ?>&rdquo;</h1>
+
+<?php
+global $wp_query;
+$search_cat = get_cat_name($wp_query->query_vars['cat']);
+if ($search_cat == "")
+{
+  $search_cat = "Any";
+}
+?>
+      <h1>Search Results for &ldquo;<?php the_search_query(); ?>&rdquo; in category &ldquo;<?php echo $search_cat; ?>&rdquo;</h1>
 				<ol>
 
 					<?php while (have_posts()) : the_post(); ?>
@@ -19,7 +28,7 @@
 
 				</ol>
 			</article>
-			<p>Didn't find what you're looking for? Try searching again, or browse our random projects below.</p>
+			<p>Didn't find what you're looking for? Try searching the whole site:</p>
 			<?php get_search_form(); ?>
 			<nav>
 				<p><?php posts_nav_link('&nbsp;&bull;&nbsp;'); ?></p>

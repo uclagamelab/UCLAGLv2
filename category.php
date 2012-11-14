@@ -7,10 +7,36 @@ Template Name: Category
 		<section id="main_section">
 			<section id="games_intro" class="grey_plate">
 
+
+<form class="search category"method="get" action="<?php bloginfo('url'); ?>/">
+<label for="s">Search: </label>
 <?php 
 
+$parentCatList = get_category_parents($cat,false,',');
+$parentCatListArray = split(",",$parentCatList);
+$topParentName = $parentCatListArray[0];
+$topParentID = get_cat_ID(strtolower($topParentName));
+global $firephp;
+$firephp->log(get_the_category());
+
+$args = array(
+    'child_of' => $topParentID,
+    'hierarchical' => true,
+    'depth' => 4,
+    'show_option_all' => "All " . $topParentName
+    ); 
+wp_dropdown_categories($args); 
+
+?>
+  <input type="text" id="s" name="s" class="ss-form-entry ss-q-short search_entry" title="ENTER YOUR SEARCH HERE"value="<?php the_search_query(); ?>">
+  <input type="submit" class="ss-q-submit" value="OK!">
+</form>
+<?php 
+
+
 echo get_category_parents($cat, TRUE, ' &raquo; ') . "<br/>";
-$parent_cats =  get_category_parents( get_query_var('cat') , false , ' ' );  
+
+
 if (is_category()){ 
   $this_category = get_category($cat);
   if (get_category_children($this_category->cat_ID) != "") {
@@ -20,14 +46,18 @@ if (is_category()){
   }
 } 
 
+
 ?>
+
+
 			</section><!-- #games_intro -->
 			<section id="feature_spots">
       <?php 
          $count = 1;
          $loop = new WP_Query(array(
-           'post_type'=> array('resource','game','person'),
-           'category_name'=>single_cat_title('', false)
+           'post_type'=> array('resource','game',),
+           //'category_name'=>single_cat_title('', false)
+           'cat' => $this_category->cat_ID
          )); 
          if ($loop->have_posts()) : while ( $loop->have_posts() ) : $loop->the_post();
          if($count%3==0){ 

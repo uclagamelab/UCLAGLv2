@@ -2,11 +2,6 @@
 
 - installed a plugin to remove category base, this makes /resources/{category}/{sub-category} urls possible
   - should look at incorporating this into the theme since upgrading the plugin could break our urls
-- need to see how to make subcateogories of poeple use the people-category.php template
-  - see this post: http://wordpress.stackexchange.com/questions/36968/sub-category-templates
-  - I tried this solution: http://stackoverflow.com/questions/3119961/make-all-wordpress-categories-use-their-parent-category-template
-  - This seems to use the correct template but the custom fields are missing for some reason
-  - Tried to get firephp working for debug. sort of works but need to read more about how
 
 ##TODO##
 
@@ -16,4 +11,3 @@
 - fix styling for width on people so that it's not dependant on description length. 
   - article.person { width: 963px; margin-left:-4px; }
   - also need to fix width of thumbnail 
-- add pagination for resources, games

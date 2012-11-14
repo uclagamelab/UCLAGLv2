@@ -1,8 +1,3 @@
-/* @override 
-	http://games.ucla.edu/wp-content/themes/UCLAGL/style.css
-	http://149.142.120.35/wp-content/themes/UCLAGL/style.css
-*/
-
 /*
 Theme Name: UCLAGL
 Theme URI: http://games.ucla.edu/
@@ -1205,13 +1200,6 @@ article#random_project_grid_bottom {
 
 /* @end */
 
-/* @group SEARCH */
-
-label[for=s] {
-	display: none;
-}
-
-/* @end */
 
 /* @group ELEMENTS */
 
@@ -1514,6 +1502,13 @@ div.wpcf7 .watermark {
 }
 
 
+.grey_plate:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+
 article#error404{
 	width: 713px;
 	height: 138px;
@@ -1535,6 +1530,12 @@ form.search{
 	margin-right: auto;
 	margin-left: auto;
 	
+}
+
+form.category.search{
+ width 411px;
+ float: right;
+ padding-bottom:20px;
 }
 
 .search_entry {

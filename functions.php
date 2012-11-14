@@ -8,7 +8,7 @@ $firephp = FirePHP::getInstance(true);
 define('_TEMPLATEURL',WP_CONTENT_URL.'/themes/'.basename(TEMPLATEPATH));
 
 //debug show what template is being used
-add_action('wp_footer', 'show_template');
+//add_action('wp_footer', 'show_template');
 function show_template() {
     global $template;
     print_r($template);
