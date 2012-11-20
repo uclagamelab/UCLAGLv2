@@ -32,16 +32,8 @@ add_image_size('project-index', 570, 139, true);
 add_image_size('resources-index', 107, 98, true);
 
 
-// add_action( 'init', 'register_my_taxonomies', 0 );
-
-add_action('init', 'my_init');
-
-add_filter('post_updated_messages', 'my_post_updated_messages');
-
-add_filter( 'map_meta_cap', 'my_map_meta_cap', 10, 4 );
 
 add_filter('upload_mimes', 'custom_upload_mimes');
-
 function custom_upload_mimes ( $existing_mimes=array() ) {
 	// add your extension to the array
 	$existing_mimes['unity3d'] = 'application/vnd.unity';
@@ -52,7 +44,6 @@ function custom_upload_mimes ( $existing_mimes=array() ) {
 }
 
 add_filter( 'pre_get_posts', 'my_get_posts' );
-
 function my_get_posts( $query ) {
 	if ( is_home() )
 		$query->set( 'post_type', array( 'post', 'page', 'game', 'resource', 'person') );
@@ -60,133 +51,15 @@ function my_get_posts( $query ) {
 	return $query;
 }
 
-// custom constant (opposite of TEMPLATEPATH)
-//define('_TEMPLATEURL', WP_CONTENT_URL . '/themes/' . basename(TEMPLATEPATH));
 
-include_once 'WPAlchemy/MetaBox.php';
+include_once 'vendors/WPAlchemy/MetaBox.php';
+include_once 'vendors/wp-no-category-base/no-category-base.php';
 
-// include css to style the custom meta boxes, this should be a global
-// stylesheet used by all similar meta boxes
-
-$game_credits = new WPAlchemy_MetaBox(array
-(
-	'id' => '_game_credits', // underscore prefix hides fields from the custom fields area
-	'title' => 'Credits',
-	'template' => TEMPLATEPATH . '/custom/credits_meta.php',
-	'types' => array('game'), // added only for custom post type "game"
-	'priority' => 'low',
-));
-
-$person_title = new WPAlchemy_MetaBox(array
-(
-	'id' => '_person_title',
-	'title' => 'Title',
-	'template' => TEMPLATEPATH . '/custom/person_title_meta.php',
-	'types' => array('person'),
-	'priority' => 'low',
-	'context' => 'side',
-));
-
-$person_department = new WPAlchemy_MetaBox(array
-(
-	'id' => '_person_department',
-	'title' => 'Department',
-	'template' => TEMPLATEPATH . '/custom/person_department_meta.php',
-	'types' => array('person'),
-	'priority' => 'low',
-	'context' => 'side',
-));
-
-$lab_employee = new WPAlchemy_MetaBox(array
-(
-	'id' => '_lab_employee',
-	'title' => 'Job Title',
-	'template' => TEMPLATEPATH . '/custom/job_title_meta.php',
-	'types' => array('person'),
-	'priority' => 'low',
-	'context' => 'side',
-));
+include_once 'custom/register_metaboxes.php';
 
 
 
-$short_description = new WPAlchemy_MetaBox(array
-(
-	'id' => '_short_description',
-	'title' => 'Short Description',	
-	'template' => TEMPLATEPATH . '/custom/short_description_meta.php',
-	'types' => array('game', 'resource', 'person', 'page'),
-	'priority' => 'high',
-));
-
-$author_bio = new WPAlchemy_MetaBox(array
-(
-	'id' => '_author_bio',
-	'title' => 'About the author',	
-	'template' => TEMPLATEPATH . '/custom/author_bio_meta.php',
-	'types' => array('resource'),
-	'priority' => 'high',
-));
-
-$link_out = new WPAlchemy_MetaBox(array
-(
-	'id' => '_link_out',
-	'title' => 'Link Out',	
-	'template' => TEMPLATEPATH . '/custom/link_out_meta.php',
-	'types' => array('game', 'resource', 'person'),
-	'priority' => 'low',
-));
-
-$context = new WPAlchemy_MetaBox(array
-(
-	'id' => '_context',
-	'title' => 'Context',	
-	'template' => TEMPLATEPATH . '/custom/context_meta.php',
-	'types' => array('game'),
-	'priority' => 'high',
-));
-
-$medium = new WPAlchemy_MetaBox(array
-(
-	'id' => '_medium',
-	'title' => 'Medium',	
-	'template' => TEMPLATEPATH . '/custom/medium_meta.php',
-	'types' => array('game'),
-	'priority' => 'high',
-));
-
-
-
-$attachments = new WPAlchemy_MetaBox(array
-(
-	'id' => '_attachments',
-	'title' => 'Attachments',	
-	'template' => TEMPLATEPATH . '/custom/attachments_meta.php',
-	'types' => array('game', 'resource'),
-	'priority' => 'low',
-));
-
-$eventdate = new WPAlchemy_MetaBox(array
-(
-	'id' => '_eventdate',
-	'title' => 'Event Date',
-	'template' => TEMPLATEPATH . '/custom/eventdate_meta.php',
-	'types' => array('resource'),
-	'include_category' => array('Events','Lecture', 'Show', 'Workshop'),
-	'context' => 'side',
-));
-
-$requirements = new WPAlchemy_MetaBox(array
-(
-	'id' => '_requirements',
-	'title' => 'Requirements',
-	'template' => TEMPLATEPATH . '/custom/requirements_meta.php',
-	'types' => array('resource'),
-	'include_category' => array('Events','Lecture', 'Show', 'Workshop'),
-));
-
-
-
-
+add_action('init', 'my_init');
 function my_init()
 {
 	if (is_admin())
@@ -411,6 +284,8 @@ function create_context_taxonomy(){
   ));
 }
 
+
+add_filter('post_updated_messages', 'my_post_updated_messages');
 function my_post_updated_messages( $messages ) {
   global $post_ID;
 
@@ -514,6 +389,7 @@ function add_help_text($contextual_help, $screen_id, $screen) {
 
 
 
+add_filter( 'map_meta_cap', 'my_map_meta_cap', 10, 4 );
 function my_map_meta_cap( $caps, $cap, $user_id, $args ) {
 
 	/* If editing, deleting, or reading a game, get the post and post type object. */
