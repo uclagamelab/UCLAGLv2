@@ -1,8 +1,8 @@
 ##Notes##
 
-- installed a plugin to remove category base, this makes /resources/{category}/{sub-category} urls possible
-  - should look at incorporating this into the theme since upgrading the plugin could break our urls
-- reorganize code in functions.php
+- need to change menus to use categories instead of pages
+- need to refresh permalinks
+- need to categorize all custom posts
 
 ##TODO##
 
