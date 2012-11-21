@@ -1675,6 +1675,10 @@ section#main_description, #about_map {
 	margin-bottom: 40px;
 }
 
+article.person { 
+  width:99.4%;
+}
+
 section#bio_banner{
 	margin-top: -60px;
 }
