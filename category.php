@@ -16,8 +16,6 @@ $parentCatList = get_category_parents($cat,false,',');
 $parentCatListArray = split(",",$parentCatList);
 $topParentName = $parentCatListArray[0];
 $topParentID = get_cat_ID(strtolower($topParentName));
-global $firephp;
-$firephp->log(get_the_category());
 
 $args = array(
     'child_of' => $topParentID,
