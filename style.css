@@ -328,78 +328,14 @@ nav#header_nav>ul li a>div.link_text{
 }
 
 
-
-ul.subnav{
-	width: 0;
-	position: absolute;
-	display: block;
-	z-index: 0;
-	margin-left: -37px;
-/*	margin-top: 150px;*/
-/*	top: 90px;*/
+.cat-item {
+  display: inline;
 }
 
-
-ul.subnav li{
-	list-style: none;
-	height: 20px;
-	float: left;
-	text-align: center;
-	width: 94px;
-	height: auto;
-	padding: 5px 2px;
-	border-top: 1px solid #666;
-	font: bold 12px "Courier New", Courier, mono;
-	color: #000000;
+.children {
+  display: inline;
+  padding-left: 0px;
 }
-
-ul.subnav li:hover{
-	cursor:pointer;
-}
-/*.current_page_item ul li.all{
-	padding-top: 28px;
-}*/
-
-ul.subnav li.cap{
-	height: 25px;
-	margin-top: -35px;
-}
-
-li.menu-item ul.subnav li.tail{
-	height: 31px;
-}
-
-li.menu-item-994 ul.subnav li.tail{
-	background: url(images/bottomcap3.png) no-repeat -3px bottom;
-}
-
-li.menu-item-1323 ul.subnav li.tail{
-	background: url(images/bottomcap1.png) no-repeat -3px bottom;
-}
-
-ul.subnav li.background0{
-	background: url(images/subnav0.png) repeat;
-}
-
-ul.subnav li.background1{
-	background: url(images/subnav1.png) repeat;
-	opacity: 1;
-}
-
-ul.subnav li.background2{
-	background: url(images/subnav2.png) repeat;
-}
-
-ul.subnav li.background3{
-	background: url(images/subnav3.png) repeat;
-}
-
-ul.subnav li.background4{
-	background: url(images/subnav4.png) repeat;
-	
-}
-
-
 
 /* @end */
 

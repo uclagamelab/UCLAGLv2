@@ -17,7 +17,8 @@
 		
 
 
-		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="http://code.jquery.com/color/jquery.color-2.1.0.min.js"></script>
 		<script src="<?php bloginfo('template_directory'); ?>/javascript/jquery.easing.1.2.js"></script>
 		<script src="<?php bloginfo('template_directory'); ?>/javascript/jquery.marquee.js"></script>
 		<script src="<?php bloginfo('template_directory'); ?>/javascript/jquery.anythingslider.js"></script>

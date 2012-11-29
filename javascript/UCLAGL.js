@@ -72,6 +72,10 @@ $(document).ready(function() {
 
 	$('#menu-custom-main-nav-1 li a span.separator:first').remove();
 	
+  $('li.cat-item a').each(function(i) {
+    $(this).css("color", $.Color($(this).css("color")).hue(Math.floor( Math.random() * 359 ) ));
+  });
+
 //	end nav stuff
 
 
