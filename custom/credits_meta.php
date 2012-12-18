@@ -9,7 +9,7 @@
 		<?php $mb->the_field('person'); ?>
 		<p><label>PERSON</label><input type="text" name="<?php $mb->the_name(); ?>" value="<?php $mb->the_value(); ?>" /></p>
 		<?php $mb->the_field('roll'); ?>
-		<p><label>ROLL</label><input type="text" name="<?php $mb->the_name(); ?>" value="<?php $mb->the_value(); ?>"/></p>
+		<p><label>ROLE</label><input type="text" name="<?php $mb->the_name(); ?>" value="<?php $mb->the_value(); ?>"/></p>
  
 		<a href="#" class="dodelete">Remove Person</a>
 	<?php $mb->the_group_close(); ?>

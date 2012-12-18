@@ -5,10 +5,13 @@
  * @copyright	Copyright (c) 2009, Dimas Begunoff, http://farinspace.com
  * @license		http://en.wikipedia.org/wiki/MIT_License The MIT License
  * @package		WPAlchemy
- * @version		1.3.3
+ * @version		1.5.2
  * @link		http://github.com/farinspace/wpalchemy
  * @link		http://farinspace.com
  */
+
+// todo: perhaps move _global_head and _global_foot locally, when first run
+// define a constant to prevent other instances from running again ...
 
 add_action('admin_head', array('WPAlchemy_MetaBox', '_global_head'));
 
@@ -24,10 +27,15 @@ define('WPALCHEMY_FIELD_HINT_TEXTAREA', 'textarea');
 
 define('WPALCHEMY_FIELD_HINT_CHECKBOX', 'checkbox');
 
+define('WPALCHEMY_FIELD_HINT_CHECKBOX_MULTI', 'checkbox_multi');
+
 define('WPALCHEMY_FIELD_HINT_RADIO', 'radio');
 
 define('WPALCHEMY_FIELD_HINT_SELECT', 'select');
 
+define('WPALCHEMY_FIELD_HINT_SELECT_MULTI', 'select_multi');
+
+// depreciated, use WPALCHEMY_FIELD_HINT_SELECT_MULTI instead
 define('WPALCHEMY_FIELD_HINT_SELECT_MULTIPLE', 'select_multiple');
 
 define('WPALCHEMY_LOCK_TOP', 'top');
@@ -46,6 +54,15 @@ define('WPALCHEMY_VIEW_ALWAYS_OPENED', 'always_opened');
 
 class WPAlchemy_MetaBox
 {
+	/**
+	 * User defined identifier for the meta box, prefix with an underscore to
+	 * prevent option(s) form showing up in the custom fields meta box, this
+	 * option should be used when instantiating the class.
+	 *
+	 * @since	1.0
+	 * @access	public
+	 * @var		string required
+	 */
 	var $id;
 
 	/**
@@ -54,32 +71,173 @@ class WPAlchemy_MetaBox
 	 *
 	 * @since	1.0
 	 * @access	public
-	 * @var		string
+	 * @var		string required
+	 * @see		$hide_title
 	 */
 	var $title = 'Custom Meta';
 
-	var $types;
-	var $context = 'normal';
-	var $priority = 'high';
+	/**
+	 * Used to set the meta box content, the contents of your meta box should be
+	 * defined within this file, this option should be used when instantiating
+	 * the class.
+	 *
+	 * @since	1.0
+	 * @access	public
+	 * @var		string required
+	 */
 	var $template;
+
+	/**
+	 * Used to set the post types that the meta box can appear in, this option 
+	 * should be used when instantiating the class.
+	 *
+	 * @since	1.0
+	 * @access	public
+	 * @var		array 
+	 */
+	var $types;
+
+	/**
+	 * @since	1.0
+	 * @access	public
+	 * @var		bool
+	 */
+	var $context = 'normal';
+
+	/**
+	 * @since	1.0
+	 * @access	public
+	 * @var		bool
+	 */
+	var $priority = 'high';
+	
+	/**
+	 * @since	1.0
+	 * @access	public
+	 * @var		bool
+	 */
 	var $autosave = TRUE;
 
+	/**
+	 * Used to set how the class does its data storage, data will be stored as
+	 * an associative array in a single meta entry in the wp_postmeta table or
+	 * data can be set and individual entries in the wp_postmeta table, the 
+	 * following constants should be used when setting this option, 
+	 * WPALCHEMY_MODE_ARRAY (default) and WPALCHEMY_MODE_EXTRACT, this option
+	 * should be used when instantiating the class.
+	 *
+	 * @since	1.2
+	 * @access	public
+	 * @var		string
+	 */
 	var $mode = WPALCHEMY_MODE_ARRAY;
+
+	/**
+	 * When the mode option is set to WPALCHEMY_MODE_EXTRACT, you have to take
+	 * care to avoid name collisions with other meta entries. Use this option to
+	 * automatically add a prefix to your variables, this option should be used
+	 * when instantiating the class.
+	 *
+	 * @since	1.2
+	 * @access	public
+	 * @var		array
+	 */
 	var $prefix;
 
+	/**
+	 * @since	1.0
+	 * @access	public
+	 * @var		bool
+	 */
 	var $exclude_template;
+
+	/**
+	 * @since	1.0
+	 * @access	public
+	 * @var		bool
+	 */
 	var $exclude_category_id;
+
+	/**
+	 * @since	1.0
+	 * @access	public
+	 * @var		bool
+	 */
 	var $exclude_category;
+
+	/**
+	 * @since	1.0
+	 * @access	public
+	 * @var		bool
+	 */
 	var $exclude_tag_id;
+
+	/**
+	 * @since	1.0
+	 * @access	public
+	 * @var		bool
+	 */
 	var $exclude_tag;
+
+	/**
+	 * @since	1.0
+	 * @access	public
+	 * @var		bool
+	 */
 	var $exclude_post_id;
 
+	/**
+	 * @since	1.0
+	 * @access	public
+	 * @var		bool
+	 */
 	var $include_template;
+
+	/**
+	 * @since	1.0
+	 * @access	public
+	 * @var		bool
+	 */
 	var $include_category_id;
+
+	/**
+	 * @since	1.0
+	 * @access	public
+	 * @var		bool
+	 */
 	var $include_category;
+
+	/**
+	 * @since	1.0
+	 * @access	public
+	 * @var		bool
+	 */
 	var $include_tag_id;
+
+	/**
+	 * @since	1.0
+	 * @access	public
+	 * @var		bool
+	 */
 	var $include_tag;
+
+	/**
+	 * @since	1.0
+	 * @access	public
+	 * @var		bool
+	 */
 	var $include_post_id;
+
+	/**
+	 * Callback used on the WordPress "admin_init" action, the main benefit is 
+	 * that this callback is executed only when the meta box is present, this
+	 * option should be used when instantiating the class.
+	 *
+	 * @since	1.3.4
+	 * @access	public
+	 * @var		string|array optional
+	 */
+	var $init_action;
 
 	/**
 	 * Callback used to override when the meta box gets displayed, must return
@@ -88,18 +246,22 @@ class WPAlchemy_MetaBox
 	 *
 	 * @since	1.3
 	 * @access	public
-	 * @var		string|array
+	 * @var		string|array optional
+	 * @param	array $post_id first variable passed to the callback function
 	 * @see		can_output()
 	 */
 	var $output_filter;
 
 	/**
-	 * Callback used to override or insert meta data before saving, this option
-	 * should be used when instantiating the class.
+	 * Callback used to override or insert meta data before saving, you can halt
+	 * saving by passing back FALSE (return FALSE), this option should be used
+	 * when instantiating the class.
 	 *
 	 * @since	1.3
 	 * @access	public
-	 * @var		string|array
+	 * @var		string|array optional
+	 * @param	array $meta meta box data, first variable passed to the callback function
+	 * @param	string $post_id second variable passed to the callback function
 	 * @see		$save_action, add_filter()
 	 */
 	var $save_filter;
@@ -110,7 +272,9 @@ class WPAlchemy_MetaBox
 	 *
 	 * @since	1.3
 	 * @access	public
-	 * @var		string|array
+	 * @var		string|array optional
+	 * @param	array $meta meta box data, first variable passed to the callback function
+	 * @param	string $post_id second variable passed to the callback function
 	 * @see		$save_filter, add_filter()
 	 */
 	var $save_action;
@@ -121,7 +285,8 @@ class WPAlchemy_MetaBox
 	 *
 	 * @since	1.3
 	 * @access	public
-	 * @var		string|array
+	 * @var		string|array optional
+	 * @param	array $content current head content, first variable passed to the callback function
 	 * @see		$head_action, add_filter()
 	 */
 	var $head_filter;
@@ -132,7 +297,7 @@ class WPAlchemy_MetaBox
 	 *
 	 * @since	1.3
 	 * @access	public
-	 * @var		string|array
+	 * @var		string|array optional
 	 * @see		$head_filter, add_action()
 	 */
 	var $head_action;
@@ -143,7 +308,8 @@ class WPAlchemy_MetaBox
 	 *
 	 * @since	1.3
 	 * @access	public
-	 * @var		string|array
+	 * @var		string|array optional
+	 * @param	array $content current foot content, first variable passed to the callback function
 	 * @see		$foot_action, add_filter()
 	 */
 	var $foot_filter;
@@ -154,7 +320,7 @@ class WPAlchemy_MetaBox
 	 *
 	 * @since	1.3
 	 * @access	public
-	 * @var		string|array
+	 * @var		string|array optional
 	 * @see		$foot_filter, add_action()
 	 */
 	var $foot_action;
@@ -165,17 +331,27 @@ class WPAlchemy_MetaBox
 	 *
 	 * @since	1.3
 	 * @access	public
-	 * @var		bool
+	 * @var		bool optional
 	 */
 	var $hide_editor = FALSE;
 
+	/**
+	 * Used in conjunction with the "hide_editor" option, prevents the media
+	 * buttons from also being hidden.
+	 *
+	 * @since	1.5
+	 * @access	public
+	 * @var		bool optional
+	 */
+	var $use_media_buttons = FALSE;
+	
 	/**
 	 * Used to hide the meta box title, this option should be used when
 	 * instantiating the class.
 	 *
 	 * @since	1.3
 	 * @access	public
-	 * @var		bool
+	 * @var		bool optional
 	 * @see		$title
 	 */
 	var $hide_title = FALSE;
@@ -187,7 +363,7 @@ class WPAlchemy_MetaBox
 	 *
 	 * @since		1.3.3
 	 * @access		public
-	 * @var			string possible values are: top, bottom, before_post_title, after_post_title
+	 * @var			string optional possible values are: top, bottom, before_post_title, after_post_title
 	 */
 	var $lock;
 
@@ -198,7 +374,7 @@ class WPAlchemy_MetaBox
 	 * @deprecated	deprecated since version 1.3.3
 	 * @since		1.3
 	 * @access		public
-	 * @var			bool
+	 * @var			bool optional
 	 * @see			$lock
 	 */
 	var $lock_on_top = FALSE;
@@ -210,7 +386,7 @@ class WPAlchemy_MetaBox
 	 * @deprecated	deprecated since version 1.3.3
 	 * @since		1.3
 	 * @access		public
-	 * @var			bool
+	 * @var			bool optional
 	 * @see			$lock
 	 */
 	var $lock_on_bottom = FALSE;
@@ -222,9 +398,19 @@ class WPAlchemy_MetaBox
 	 *
 	 * @since	1.3.3
 	 * @access	public
-	 * @var		string possible values are: opened, closed, always_opened
+	 * @var		string optional possible values are: opened, closed, always_opened
 	 */
 	var $view;
+
+	/**
+	 * Used to hide the show/hide checkbox option from the screen options area,
+	 * this option should be used when instantiating the class.
+	 *
+	 * @since		1.3.4
+	 * @access		public
+	 * @var			bool optional
+	 */
+	var $hide_screen_option = FALSE;
 
 	// private
 
@@ -248,9 +434,21 @@ class WPAlchemy_MetaBox
 	var $in_template = FALSE;
 	var $group_tag;
 	var $current_post_id;
+
+	/**
+	 * Used to store current loop details, cleared after loop ends
+	 *
+	 * @since	1.4
+	 * @access	private
+	 * @var		stdClass
+	 * @see		have_fields_and_multi(), have_fields()
+	 */
+	var $_loop_data;
 	
 	function WPAlchemy_MetaBox($arr)
 	{
+		$this->_loop_data = new stdClass;
+		
 		$this->meta = array();
 
 		$this->types = array('post', 'page');
@@ -302,13 +500,50 @@ class WPAlchemy_MetaBox
 			
 			add_action('admin_init', array($this,'_init'));
 
-			add_action('admin_head', array($this,'_head'), 11);
-			
-			add_action('admin_footer', array($this,'_foot'), 11);
+			// uses the default wordpress-importer plugin hook
+			add_action('import_post_meta', array($this, '_import'), 10, 3);
 		}
 		else 
 		{
 			die('Associative array parameters required');
+		}
+	}
+
+	/**
+	 * Used to correct double serialized data during post/page export/import,
+	 * additionally will try to fix corrupted serialized data by recalculating
+	 * string length values
+	 *
+	 * @since	1.3.16
+	 * @access	private
+	 */
+	function _import($post_id, $key, $value)
+	{
+		if (WPALCHEMY_MODE_ARRAY == $this->mode AND $key == $this->id)
+		{
+			// using $wp_import to get access to the raw postmeta data prior to it getting passed
+			// through "maybe_unserialize()" in "plugins/wordpress-importer/wordpress-importer.php"
+			// the "import_post_meta" action is called after "maybe_unserialize()"
+			
+			global $wp_import;
+
+			foreach ( $wp_import->posts as $post )
+			{
+				if ( $post_id == $post['post_id'] )
+				{
+					foreach( $post['postmeta'] as $meta )
+					{
+						if ( $key == $meta['key'] )
+						{
+							// try to fix corrupted serialized data, specifically "\r\n" being converted to "\n" during wordpress XML export (WXR)
+							// "maybe_unserialize()" fixes a wordpress bug which double serializes already serialized data during export/import
+							$value = maybe_unserialize( preg_replace( '!s:(\d+):"(.*?)";!es', "'s:'.strlen('$2').':\"$2\";'", stripslashes( $meta['value'] ) ) );
+							
+							update_post_meta( $post_id, $key,  $value );
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -321,11 +556,10 @@ class WPAlchemy_MetaBox
 	 */
 	function _init()
 	{
-		// runs only in post.php and post-new.php (this includes pages also)
-		$uri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : NULL ;
-		if ($uri AND !strpos($uri,'post.php') AND !strpos($uri,'post-new.php')) return;
+		// must be creating or editing a post or page
+		if ( ! WPAlchemy_MetaBox::_is_post() AND ! WPAlchemy_MetaBox::_is_page()) return;
 		
-		if (!empty($this->output_filter))
+		if ( ! empty($this->output_filter))
 		{
 			$this->add_filter('output', $this->output_filter);
 		}
@@ -334,10 +568,10 @@ class WPAlchemy_MetaBox
 		{
 			foreach ($this->types as $type) 
 			{
-				add_meta_box($this->id . '_metabox', $this->title, array($this,'_setup'), $type, $this->context, $this->priority);
+				add_meta_box($this->id . '_metabox', $this->title, array($this, '_setup'), $type, $this->context, $this->priority);
 			}
 
-			add_action('save_post',array($this,'_save'));
+			add_action('save_post', array($this,'_save'));
 
 			$filters = array('save', 'head', 'foot');
 
@@ -347,11 +581,18 @@ class WPAlchemy_MetaBox
 
 				if (!empty($this->$var))
 				{
-					$this->add_filter($filter, $this->$var);
+					if ('save' == $filter)
+					{
+						$this->add_filter($filter, $this->$var, 10, 2);
+					}
+					else
+					{
+						$this->add_filter($filter, $this->$var);
+					}
 				}
 			}
 
-			$actions = array('save', 'head', 'foot');
+			$actions = array('save', 'head', 'foot', 'init');
 
 			foreach ($actions as $action)
 			{
@@ -359,8 +600,25 @@ class WPAlchemy_MetaBox
 
 				if (!empty($this->$var))
 				{
-					$this->add_action($action, $this->$var);
+					if ('save' == $action)
+					{
+						$this->add_action($action, $this->$var, 10, 2);
+					}
+					else
+					{
+						$this->add_action($action, $this->$var);
+					}
 				}
+			}
+
+			add_action('admin_head', array($this,'_head'), 11);
+
+			add_action('admin_footer', array($this,'_foot'), 11);
+
+			// action: init
+			if ($this->has_action('init'))
+			{
+				$this->do_action('init');
 			}
 		}
 	}
@@ -377,33 +635,30 @@ class WPAlchemy_MetaBox
 	{
 		$content = NULL;
 
-		if ($this->can_output())
+		ob_start();
+
+		?>
+		<style type="text/css">
+			<?php if ($this->hide_editor) { ?> #wp-content-editor-container, #post-status-info, <?php if ($this->use_media_buttons) { ?> #content-html, #content-tmce<?php } else { ?> #wp-content-wrap<?php } ?> { display:none; } <?php } ?>
+		</style>
+		<?php
+
+		$content = ob_get_contents();
+
+		ob_end_clean();
+
+		// filter: head
+		if ($this->has_filter('head'))
 		{
-			ob_start();
+			$content = $this->apply_filters('head', $content);
+		}
 
-			?>
-			<style type="text/css">
-				<?php if ($this->hide_editor): ?> #postdiv, #postdivrich { display:none; } <?php endif; ?>
-			</style>
-			<?php
+		echo $content;
 
-			$content = ob_get_contents();
-
-			ob_end_clean();
-			
-			// filter: head
-			if ($this->has_filter('head'))
-			{
-				$content = $this->apply_filters('head', $content);
-			}
-
-			echo $content;
-
-			// action: head
-			if ($this->has_action('head'))
-			{
-				$this->do_action('head');
-			}
+		// action: head
+		if ($this->has_action('head'))
+		{
+			$this->do_action('head');
 		}
 	}
 
@@ -419,7 +674,13 @@ class WPAlchemy_MetaBox
 	{
 		$content = NULL;
 
-		if ($this->can_output() AND ($this->lock OR $this->hide_title OR $this->view))
+		if
+		(
+			$this->lock OR
+			$this->hide_title OR
+			$this->view OR
+			$this->hide_screen_option
+		)
 		{
 			ob_start();
 
@@ -428,7 +689,8 @@ class WPAlchemy_MetaBox
 			/* <![CDATA[ */
 			(function($){ /* not using jQuery ondomready, code runs right away in footer */
 
-				var mb = $('#<?php echo $this->id; ?>_metabox');
+				var mb_id = '<?php echo $this->id; ?>';
+				var mb = $('#' + mb_id + '_metabox');
 
 				<?php if (WPALCHEMY_LOCK_TOP == $this->lock): ?>
 				<?php if ('side' == $this->context): ?>
@@ -509,6 +771,10 @@ class WPAlchemy_MetaBox
 				$('.hndle', mb).css('cursor','auto');
 				<?php endif; ?>
 
+				<?php if ($this->hide_screen_option): ?>
+					$('.metabox-prefs label[for='+ mb_id +'_metabox-hide]').remove();
+				<?php endif; ?>
+
 				mb = null;
 
 			})(jQuery);
@@ -519,20 +785,20 @@ class WPAlchemy_MetaBox
 			$content = ob_get_contents();
 
 			ob_end_clean();
-			
-			// filter: foot
-			if ($this->has_filter('foot'))
-			{
-				$content = $this->apply_filters('foot', $content);
-			}
+		}
+		
+		// filter: foot
+		if ($this->has_filter('foot'))
+		{
+			$content = $this->apply_filters('foot', $content);
+		}
 
-			echo $content;
+		echo $content;
 
-			// action: foot
-			if ($this->has_action('foot'))
-			{
-				$this->do_action('foot');
-			}
+		// action: foot
+		if ($this->has_action('foot'))
+		{
+			$this->do_action('foot');
 		}
 	}
 
@@ -618,8 +884,9 @@ class WPAlchemy_MetaBox
 	 */
 	function apply_filters($tag, $value)
 	{
-		$tag = $this->_get_filter_tag($tag);
-		return apply_filters($tag, $value);
+		$args = func_get_args();
+		$args[0] = $this->_get_filter_tag($tag);
+		return call_user_func_array('apply_filters', $args);
 	}
 
 	/**
@@ -700,8 +967,143 @@ class WPAlchemy_MetaBox
 	 */
 	function do_action($tag, $arg = '')
 	{
-		$tag = $this->_get_action_tag($tag);
-		return do_action($tag, $arg);
+		$args = func_get_args();
+		$args[0] = $this->_get_action_tag($tag);
+		return call_user_func_array('do_action', $args);
+	}
+
+	/**
+	 * Used to check if creating a new post or editing one
+	 *
+	 * @static
+	 * @since	1.3.7
+	 * @access	private
+	 * @return	bool
+	 * @see		_is_page()
+	 */
+	function _is_post()
+	{
+		if ('post' == WPAlchemy_MetaBox::_is_post_or_page())
+		{
+			return TRUE;
+		}
+
+		return FALSE;
+	}
+
+	/**
+	 * Used to check if creating a new page or editing one
+	 *
+	 * @static
+	 * @since	1.3.7
+	 * @access	private
+	 * @return	bool
+	 * @see		_is_post()
+	 */
+	function _is_page()
+	{
+		if ('page' == WPAlchemy_MetaBox::_is_post_or_page())
+		{
+			return TRUE;
+		}
+
+		return FALSE;
+	}
+
+	/**
+	 * Used to check if creating or editing a post or page
+	 *
+	 * @static
+	 * @since	1.3.8
+	 * @access	private
+	 * @return	string "post" or "page"
+	 * @see		_is_post(), _is_page()
+	 */
+	function _is_post_or_page()
+	{
+		$post_type = WPAlchemy_MetaBox::_get_current_post_type();
+
+		if (isset($post_type))
+		{
+			if ('page' == $post_type)
+			{
+				return 'page';
+			}
+			else
+			{
+				return 'post';
+			}
+		}
+
+		return NULL;
+	}
+
+	/**
+	 * Used to check for the current post type, works when creating or editing a
+	 * new post, page or custom post type.
+	 *
+	 * @static
+	 * @since	1.4.6
+	 * @return	string [custom_post_type], page or post
+	 */
+	function _get_current_post_type()
+	{
+		$uri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : NULL ;
+
+		if ( isset( $uri ) )
+		{
+			$uri_parts = parse_url($uri);
+
+			$file = basename($uri_parts['path']);
+
+			if ($uri AND in_array($file, array('post.php', 'post-new.php')))
+			{
+				$post_id = WPAlchemy_MetaBox::_get_post_id();
+
+				$post_type = isset($_GET['post_type']) ? $_GET['post_type'] : NULL ;
+
+				$post_type = $post_id ? get_post_type($post_id) : $post_type ;
+
+				if (isset($post_type))
+				{
+					return $post_type;
+				}
+				else
+				{
+					// because of the 'post.php' and 'post-new.php' checks above, we can default to 'post'
+					return 'post';
+				}
+			}
+		}
+
+		return NULL;
+	}
+
+	/**
+	 * Used to get the current post id.
+	 *
+	 * @static
+	 * @since	1.4.8
+	 * @return	int post ID
+	 */
+	function _get_post_id()
+	{
+		global $post;
+
+		$p_post_id = isset($_POST['post_ID']) ? $_POST['post_ID'] : null ;
+
+		$g_post_id = isset($_GET['post']) ? $_GET['post'] : null ;
+
+		$post_id = $g_post_id ? $g_post_id : $p_post_id ;
+
+		$post_id = isset($post->ID) ? $post->ID : $post_id ;
+
+		if (isset($post_id))
+		{
+			return (integer) $post_id;
+		}
+		
+		return null;
 	}
 
 	/**
@@ -709,13 +1111,7 @@ class WPAlchemy_MetaBox
 	 */
 	function can_output()
 	{
-		global $post;
-		
-		$p_post_id = isset($_POST['post_ID']) ? $_POST['post_ID'] : '' ;
-		$g_post_id = isset($_GET['post']) ? $_GET['post'] : '' ;
-
-		$post_id = $g_post_id ? $g_post_id : $p_post_id ;
-		$post_id = (!empty($post) AND $post->ID) ? $post->ID : $post_id ;
+		$post_id = WPAlchemy_MetaBox::_get_post_id();
 
 		if (!empty($this->exclude_template) OR !empty($this->include_template))
 		{
@@ -925,6 +1321,13 @@ class WPAlchemy_MetaBox
 			}
 		}
 
+		$post_type = WPAlchemy_MetaBox::_get_current_post_type();
+
+		if (isset($post_type) AND ! in_array($post_type, $this->types))
+		{
+			$can_output = FALSE;
+		}
+
 		// filter: output (can_output)
 		if ($this->has_filter('output'))
 		{
@@ -945,6 +1348,9 @@ class WPAlchemy_MetaBox
 	 */
 	function _global_head()
 	{
+		// must be creating or editing a post or page
+		if ( ! WPAlchemy_MetaBox::_is_post() AND ! WPAlchemy_MetaBox::_is_page()) return;
+
 		// todo: you're assuming people will want to use this exact functionality
 		// consider giving a developer access to change this via hooks/callbacks
 
@@ -979,8 +1385,19 @@ class WPAlchemy_MetaBox
 						{
 							elem.parents('.wpa_group').remove();
 						}
+						
+						var the_group = elem.parents('.wpa_group');
+						
+						if(the_group && the_group.attr('class'))
+						{
+							the_name = the_group.attr('class').match(/wpa_group-([a-zA-Z0-9_-]*)/i);
 
-						$.wpalchemy.trigger('delete');
+							the_name = (the_name && the_name[1]) ? the_name[1] : null ;
+
+							checkLoopLimit(the_name);
+						}
+
+						$.wpalchemy.trigger('wpa_delete');
 					}
 				}
 			});
@@ -993,32 +1410,90 @@ class WPAlchemy_MetaBox
 
 				var the_name = $(this).attr('class').match(/docopy-([a-zA-Z0-9_-]*)/i)[1];
 
-				var the_group = $('.wpa_group-'+ the_name +':first.tocopy', p);
-				
-				var the_clone = the_group.clone().removeClass('tocopy');
+				var the_group = $('.wpa_group-'+ the_name +'.tocopy', p).first();
 
-				the_group.find('input, textarea, select, button, label').each(function(i,elem)
+				var the_clone = the_group.clone().removeClass('tocopy last');
+
+				var the_props = ['name', 'id', 'for', 'class'];
+
+				the_group.find('*').each(function(i, elem)
 				{
-					var the_name = $(elem).attr('name');
-
-					if (undefined != the_name)
+					for (var j = 0; j < the_props.length; j++)
 					{
-						var the_match = the_name.match(/\[(\d+)\]/i);
-						the_name = the_name.replace(the_match[0],'['+(+the_match[1]+1)+']');
-						$(elem).attr('name',the_name);
+						var the_prop = $(elem).attr(the_props[j]);
+
+						if (the_prop)
+						{
+							var the_match = the_prop.match(/\[(\d+)\]/i);
+
+							if (the_match)
+							{
+								the_prop = the_prop.replace(the_match[0],'['+ (+the_match[1]+1) +']');
+
+								$(elem).attr(the_props[j], the_prop);
+							}
+
+							the_match = null;
+
+							// todo: this may prove to be too broad of a search
+							the_match = the_prop.match(/n(\d+)/i);
+
+							if (the_match)
+							{
+								the_prop = the_prop.replace(the_match[0], 'n' + (+the_match[1]+1));
+
+								$(elem).attr(the_props[j], the_prop);
+							}
+						}
 					}
 				});
 
 				if ($(this).hasClass('ontop'))
 				{
-					$('.wpa_group-'+ the_name +':first', p).before(the_clone);
+					$('.wpa_group-'+ the_name, p).first().before(the_clone);
 				}
 				else
 				{
 					the_group.before(the_clone);
 				}
 
-				$.wpalchemy.trigger('copy', [the_clone]);
+				checkLoopLimit(the_name);
+
+				$.wpalchemy.trigger('wpa_copy', [the_clone]);
+			});
+
+			function checkLoopLimit(name)
+			{
+				var elem = $('.docopy-' + name);
+
+				var the_class = $('.wpa_loop-' + name).attr('class');
+
+				if (the_class)
+				{
+					var the_match = the_class.match(/wpa_loop_limit-([0-9]*)/i);
+
+					if (the_match)
+					{
+						var the_limit = the_match[1];
+
+						if ($('.wpa_group-' + name).not('.wpa_group.tocopy').length >= the_limit)
+						{
+							elem.hide();
+						}
+						else
+						{
+							elem.show();
+						}
+					}
+				}
+			}
+			
+			/* do an initial limit check, show or hide buttons */
+			$('[class*=docopy-]').each(function()
+			{
+				var the_name = $(this).attr('class').match(/docopy-([a-zA-Z0-9_-]*)/i)[1];
+
+				checkLoopLimit(the_name);
 			});
 		});
 		/* ]]> */
@@ -1037,6 +1512,9 @@ class WPAlchemy_MetaBox
 	 */
 	function _global_foot()
 	{
+		// must be creating or editing a post or page
+		if ( ! WPAlchemy_MetaBox::_is_post() AND ! WPAlchemy_MetaBox::_is_page()) return;
+
 		?>
 		<script type="text/javascript">
 		/* <![CDATA[ */
@@ -1082,9 +1560,16 @@ class WPAlchemy_MetaBox
 	{
 		if ( ! is_numeric($post_id))
 		{
-			global $post;
+			if ($internal AND $this->current_post_id)
+			{
+				$post_id = $this->current_post_id;
+			}
+			else
+			{
+				global $post;
 
-			$post_id = $post->ID;
+				$post_id = $post->ID;
+			}
 		}
 
 		// this allows multiple internal calls to _meta() without having to fetch data everytime
@@ -1092,26 +1577,26 @@ class WPAlchemy_MetaBox
 
 		$this->current_post_id = $post_id;
 
-		if ($this->mode == WPALCHEMY_MODE_EXTRACT)
-		{
-			$fields = get_post_meta($post_id, $this->id . '_fields', TRUE);
+		// WPALCHEMY_MODE_ARRAY
 
-			if (!empty($fields) AND is_array($fields))
+		$meta = get_post_meta($post_id, $this->id, TRUE);
+
+		// WPALCHEMY_MODE_EXTRACT
+
+		$fields = get_post_meta($post_id, $this->id . '_fields', TRUE);
+
+		if ( ! empty($fields) AND is_array($fields))
+		{
+			$meta = array();
+			
+			foreach ($fields as $field)
 			{
-				foreach ($fields as $field)
-				{
-					$field_noprefix = preg_replace('/^' . $this->prefix . '/i', '', $field);
-					$this->meta[$field_noprefix] = get_post_meta($post_id, $field, TRUE);
-				}
+				$field_noprefix = preg_replace('/^' . $this->prefix . '/i', '', $field);
+				$meta[$field_noprefix] = get_post_meta($post_id, $field, TRUE);
 			}
 		}
-		else
-		{
-			$this->meta = get_post_meta($post_id, $this->id, TRUE);
 
-			// bug: when exporting then importing from wp, wp will double serialize the postmeta value
-			if (!is_array($this->meta)) $this->meta = unserialize($this->meta);
-		}
+		$this->meta = $meta;
 
 		return $this->meta;
 	}
@@ -1175,6 +1660,8 @@ class WPAlchemy_MetaBox
 	{
 		$this->_meta(NULL, TRUE);
 
+		$value = null;
+
 		if ($this->in_loop)
 		{
 			if(isset($this->meta[$this->name]))
@@ -1187,14 +1674,14 @@ class WPAlchemy_MetaBox
 					{
 						if(isset($this->meta[$this->name][$this->current]))
 						{
-							return $this->meta[$this->name][$this->current];
+							$value = $this->meta[$this->name][$this->current];
 						}
 					}
 					else
 					{
 						if(isset($this->meta[$this->name][$this->current][$n]))
 						{
-							return $this->meta[$this->name][$this->current][$n];
+							$value = $this->meta[$this->name][$this->current][$n];
 						}
 					}
 				}
@@ -1204,14 +1691,14 @@ class WPAlchemy_MetaBox
 					{
 						if(isset($this->meta[$this->name]))
 						{
-							return $this->meta[$this->name];
+							$value = $this->meta[$this->name];
 						}
 					}
 					else
 					{
 						if(isset($this->meta[$this->name][$this->current]))
 						{
-							return $this->meta[$this->name][$this->current];
+							$value = $this->meta[$this->name][$this->current];
 						}
 					}
 				}
@@ -1221,10 +1708,33 @@ class WPAlchemy_MetaBox
 		{
 			$n = is_null($n) ? $this->name : $n ;
 
-			if(isset($this->meta[$n])) return $this->meta[$n];
+			if(isset($this->meta[$n]))
+			{
+				$value = $this->meta[$n];
+			}
 		}
 
-		return NULL;
+		if (is_string($value) || is_numeric($value))
+		{
+			if ($this->in_template)
+			{
+				return htmlentities($value, ENT_QUOTES, 'UTF-8');
+			}
+			else
+			{
+				// http://wordpress.org/support/topic/call-function-called-by-embed-shortcode-direct
+				// http://phpdoc.wordpress.org/trunk/WordPress/Embed/WP_Embed.html#run_shortcode
+
+				global $wp_embed;
+
+				return do_shortcode($wp_embed->run_shortcode($value));
+			}
+		}
+		else
+		{
+			// value can sometimes be an array
+			return $value;
+		}
 	}
 
 	/**
@@ -1244,16 +1754,16 @@ class WPAlchemy_MetaBox
 	{
 		if (!$this->in_template AND $this->mode == WPALCHEMY_MODE_EXTRACT)
 		{
-			return $this->prefix . str_replace($this->prefix,'',is_null($n) ? $this->name : $n);
+			return $this->prefix . str_replace($this->prefix, '', is_null($n) ? $this->name : $n);
 		}
 
 		if ($this->in_loop)
 		{
 			$n = is_null($n) ? $this->subname : $n ;
 
-			if (!is_null($n)) return $this->id . '[' . $this->name . '][' . $this->current . '][' . $n . ']' ;
+			if (!is_null($n)) $the_field = $this->id . '[' . $this->name . '][' . $this->current . '][' . $n . ']' ;
 
-			$the_field = $this->id . '[' . $this->name . '][' . $this->current . ']' ;	
+			else $the_field = $this->id . '[' . $this->name . '][' . $this->current . ']' ;	
 		}
 		else
 		{
@@ -1261,8 +1771,18 @@ class WPAlchemy_MetaBox
 
 			$the_field = $this->id . '[' . $n . ']';
 		}
-		
-		if (WPALCHEMY_FIELD_HINT_SELECT_MULTIPLE == $this->hint) $the_field .= '[]';
+
+		$hints = array
+		(
+			WPALCHEMY_FIELD_HINT_CHECKBOX_MULTI,
+			WPALCHEMY_FIELD_HINT_SELECT_MULTI,
+			WPALCHEMY_FIELD_HINT_SELECT_MULTIPLE,
+		);
+
+		if (in_array($this->hint, $hints))
+		{
+			$the_field .= '[]';
+		}
 
 		return $the_field;
 	}
@@ -1350,13 +1870,13 @@ class WPAlchemy_MetaBox
 	{
 		if (is_null($v))
 		{
-			$the_value = $this->get_the_value(NULL, TRUE);
+			$the_value = $this->get_the_value(NULL);
 
 			$v = $n;
 		}
 		else
 		{
-			$the_value = $this->get_the_value($n, TRUE);
+			$the_value = $this->get_the_value($n);
 		}
 
 		if (is_array($the_value))
@@ -1481,24 +2001,37 @@ class WPAlchemy_MetaBox
 	{
 		$this->group_tag = $t;
 
-		$css_class = array('wpa_group','wpa_group-'. $this->name);
+		$loop_open = NULL;
+
+		$loop_open_classes = array('wpa_loop', 'wpa_loop-' . $this->name);
+		
+		$css_class = array('wpa_group', 'wpa_group-'. $this->name);
 
 		if ($this->is_first())
 		{
-			array_push($css_class,'first');
+			array_push($css_class, 'first');
+
+			$loop_open = '<div class="wpa_loop">';
+
+			if (isset($this->_loop_data->limit))
+			{
+				array_push($loop_open_classes, 'wpa_loop_limit-' . $this->_loop_data->limit);
+			}
+
+			$loop_open = '<div id="wpa_loop-'. $this->name .'" class="' . implode(' ', $loop_open_classes) . '">';
 		}
 
 		if ($this->is_last())
 		{
-			array_push($css_class,'last');
+			array_push($css_class, 'last');
 
 			if ($this->in_loop == 'multi')
 			{
-				array_push($css_class,'tocopy');
+				array_push($css_class, 'tocopy');
 			}
 		}
 
-		return '<'. $t .' class="'. implode(' ',$css_class) .'">';
+		return $loop_open . '<' . $t . ' class="'. implode(' ', $css_class) . '">';
 	}
 
 	/**
@@ -1516,21 +2049,44 @@ class WPAlchemy_MetaBox
 	 */
 	function get_the_group_close()
 	{
-		return '</'. $this->group_tag .'>';
+		$loop_close = NULL;
+		
+		if ($this->is_last())
+		{
+			$loop_close = '</div>';
+		}
+		
+		return '</' . $this->group_tag . '>' . $loop_close;
 	}
 
 	/**
 	 * @since	1.1
 	 * @access	public
 	 */
-	function have_fields_and_multi($n,$length=NULL)
+	function have_fields_and_multi($n, $options = NULL)
 	{
+		if (is_array($options))
+		{
+			// use as stdClass object
+			$options = (object)$options;
+			
+			$length = @$options->length;
+
+			$this->_loop_data->limit = @$options->limit;
+		}
+		else
+		{
+			// backward compatibility (bc)
+			$length = $options;
+		}
+
 		$this->_meta(NULL, TRUE);
+
 		$this->in_loop = 'multi';
-		return $this->_loop($n,$length,2);
+
+		return $this->_loop($n, $length, 2);
 	}
 
-	// depreciated
 	/**
 	 * @deprecated
 	 * @since	1.0
@@ -1575,7 +2131,7 @@ class WPAlchemy_MetaBox
 
 		$this->length = $length;
 
-		if ($and_one)
+		if ($this->in_template AND $and_one)
 		{
 			if ($length == 0)
 			{
@@ -1606,6 +2162,8 @@ class WPAlchemy_MetaBox
 
 		$this->in_loop = FALSE;
 
+		$this->_loop_data = new stdClass;
+
 		return FALSE;
 	}
 
@@ -1628,13 +2186,14 @@ class WPAlchemy_MetaBox
 		 * so in the case that this functionality changes, let it run twice
 		 */
 
-		$real_post_id = $_POST['post_ID'];
+		$real_post_id = isset($_POST['post_ID']) ? $_POST['post_ID'] : NULL ;
 		
 		// check autosave
 		if (defined('DOING_AUTOSAVE') AND DOING_AUTOSAVE AND !$this->autosave) return $post_id;
 	 
 		// make sure data came from our meta box, verify nonce
-		if (!wp_verify_nonce($_POST[$this->id.'_nonce'],$this->id)) return $post_id;
+		$nonce = isset($_POST[$this->id.'_nonce']) ? $_POST[$this->id.'_nonce'] : NULL ;
+		if (!wp_verify_nonce($nonce, $this->id)) return $post_id;
 	 
 		// check user permissions
 		if ($_POST['post_type'] == 'page') 
@@ -1648,73 +2207,90 @@ class WPAlchemy_MetaBox
 	 
 		// authentication passed, save data
 	 
-		$new_data = $_POST[$this->id];
+		$new_data = isset( $_POST[$this->id] ) ? $_POST[$this->id] : NULL ;
 	 
 		WPAlchemy_MetaBox::clean($new_data);
+
+		if (empty($new_data))
+		{
+			$new_data = NULL;
+		}
 
 		// filter: save
 		if ($this->has_filter('save'))
 		{
-			$new_data = $this->apply_filters('save', $new_data);
+			$new_data = $this->apply_filters('save', $new_data, $real_post_id);
+
+			/**
+			 * halt saving
+			 * @since 1.3.4
+			 */
+			if (FALSE === $new_data) return $post_id;
+
+			WPAlchemy_MetaBox::clean($new_data);
 		}
 
-		// get current fields, use $real_post_id (used in both modes)
+		// get current fields, use $real_post_id (checked for in both modes)
 		$current_fields = get_post_meta($real_post_id, $this->id . '_fields', TRUE);
 
 		if ($this->mode == WPALCHEMY_MODE_EXTRACT)
 		{
 			$new_fields = array();
 
-			foreach ($new_data as $k => $v)
+			if (is_array($new_data))
 			{
-				$field = $this->prefix . $k;
-				
-				array_push($new_fields,$field);
-
-				$current_value = get_post_meta($post_id, $field, TRUE);
-
-				$new_value = $new_data[$k];
-
-				if (!empty($current_value))
+				foreach ($new_data as $k => $v)
 				{
-					if (is_null($new_value)) delete_post_meta($post_id,$field);
-					else update_post_meta($post_id,$field,$new_value);
-				}
-				elseif (!is_null($new_value))
-				{
-					add_post_meta($post_id,$field,$new_value,TRUE);
+					$field = $this->prefix . $k;
+					
+					array_push($new_fields,$field);
+
+					$new_value = $new_data[$k];
+
+					if (is_null($new_value))
+					{
+						delete_post_meta($post_id, $field);
+					}
+					else
+					{
+						update_post_meta($post_id, $field, $new_value);
+					}
 				}
 			}
 
 			$diff_fields = array_diff((array)$current_fields,$new_fields);
 
-			foreach ($diff_fields as $field)
+			if (is_array($diff_fields))
 			{
-				delete_post_meta($post_id,$field);
+				foreach ($diff_fields as $field)
+				{
+					delete_post_meta($post_id,$field);
+				}
 			}
 
 			delete_post_meta($post_id, $this->id . '_fields');
-			add_post_meta($post_id,$this->id . '_fields',$new_fields,TRUE);
+
+			if ( ! empty($new_fields))
+			{
+				add_post_meta($post_id,$this->id . '_fields', $new_fields, TRUE);
+			}
 
 			// keep data tidy, delete values if previously using WPALCHEMY_MODE_ARRAY
 			delete_post_meta($post_id, $this->id);
 		}
 		else
 		{
-			$current_data = get_post_meta($post_id, $this->id, TRUE);
-			
-			if ($current_data)
+			if (is_null($new_data))
 			{
-				if (is_null($new_data)) delete_post_meta($post_id,$this->id);
-				else update_post_meta($post_id,$this->id,$new_data);
+				delete_post_meta($post_id, $this->id);
 			}
-			elseif (!is_null($new_data))
+			else
 			{
-				add_post_meta($post_id,$this->id,$new_data,TRUE);
+				update_post_meta($post_id, $this->id, $new_data);
 			}
 
 			// keep data tidy, delete values if previously using WPALCHEMY_MODE_EXTRACT
-			if (!empty($current_fields))
+			if (is_array($current_fields))
 			{
 				foreach ($current_fields as $field)
 				{
@@ -1728,7 +2304,7 @@ class WPAlchemy_MetaBox
 		// action: save
 		if ($this->has_action('save'))
 		{
-			$this->do_action('save', $new_data);
+			$this->do_action('save', $new_data, $real_post_id);
 		}
 
 		return $post_id;
@@ -1768,7 +2344,7 @@ class WPAlchemy_MetaBox
 
 			if (!count($arr)) 
 			{
-				$arr = NULL;
+				$arr = array();
 			}
 			else
 			{
@@ -1794,15 +2370,4 @@ class WPAlchemy_MetaBox
 	}
 }
 
-/*
-
-Contributors:
-
-	Suso Guez | http://shambanet.com/
-	http://farinspace.com/wpalchemy-metabox/comment-page-1/#comment-3156
-
-	All who have given their feedback and ideas.
-
-*/
-
-/* End of file */
+/* eof */
