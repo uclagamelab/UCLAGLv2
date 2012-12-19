@@ -92,20 +92,17 @@
 						</article><!-- game_medium -->
 						<article id="game_credits">
 							<h3>CREDITS</h3>
-							<?php $game_credits->the_meta(); ?>
 							<?php 
-							while($game_credits->have_fields_and_multi('credits')): 
-								 $game_credits->the_group_open(); 
-								 $game_credits->the_field('person'); 
+              global $game_credits;
+							while($game_credits->have_fields('credits')): 
 								 echo "<span class='name'>";
-								 echo $game_credits->the_value() ;
+								 echo $game_credits->the_value('person') ;
 								 echo "</span>"; 
 							?>
 							&nbsp;:&nbsp;
 							<?php
-								 $game_credits->the_field('roll'); 
-								 echo $game_credits->the_value(); 
-								 $game_credits->the_group_close(); 
+                 echo $game_credits->the_value('roll'); 
+                 echo "<br/>";
 							endwhile; 
 							?>
 						</article><!-- game_credits -->
