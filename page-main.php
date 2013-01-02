@@ -28,6 +28,7 @@ Template Name: Main Page
 								<?php the_title( '<h3>', '</h3>' ); ?>
 								<p>
 									<?php 
+                    $short_description->the_meta();
 										$short_description->the_field('description'); 
 										$short_description->the_value();
 									?>
@@ -76,6 +77,7 @@ Template Name: Main Page
 						<p>
 
 							<?php 
+                $short_description->the_meta();
 								$short_description->the_field('description'); 
 								$short_description->the_value();
 							?>

@@ -74,6 +74,7 @@ if (is_category()){
 						<p>
 							
 							<?php 
+                $short_description->the_meta();
 								$short_description->the_field('description'); 
 								$short_description->the_value();
 							?>
