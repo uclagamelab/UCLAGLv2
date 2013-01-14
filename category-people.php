@@ -103,10 +103,12 @@ THE GAME LAB BRINGS STUDENTS FROM A VARIETY OF BACKGROUNDS TOGETHER TO CREATE, P
 						<div class="bio_badge yellow">
 							<p>
 							<?php
+                $person_department->the_meta();
 								$person_department->the_field('person_department');
 								$person_department->the_value();
 							?> 
 							<?php
+                $person_title->the_meta();
 								$person_title->the_field('person_title');
 								$person_title->the_value();
 							?> 
