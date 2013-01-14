@@ -82,6 +82,7 @@ THE GAME LAB BRINGS STUDENTS FROM A VARIETY OF BACKGROUNDS TOGETHER TO CREATE, P
 						<p>
 
 							<?php 
+                $short_description->the_meta();
 								$short_description->the_field('description'); 
 								$short_description->the_value();
 							?>
