@@ -4,7 +4,7 @@
 include_once 'vendors/WPAlchemy/MetaBox.php';
 include_once 'vendors/wp-no-category-base/no-category-base.php';
 include_once 'custom/register_metaboxes.php';
-include_once 'custom/custom_gallery_shortcode.php';
+//include_once 'custom/custom_gallery_shortcode.php';
 include_once 'custom/custom_post_type_messages.php';
 include_once 'custom/map_mata_cap.php';
 include_once 'custom/create_custom_post_types.php';
