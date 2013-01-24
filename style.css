@@ -866,6 +866,15 @@ section#background_bottom {
 	display: block;
 }
 
+#post_main img.twoup{
+	margin-right: 40px;
+	width: 370px;
+}
+
+#post_main img.last{
+	margin-right: 0px;
+}
+
 #post_main img.full{
 	width: 895px;
 
